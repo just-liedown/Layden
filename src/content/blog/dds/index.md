@@ -33,3 +33,6 @@ Key 用来区分 **同一个 Topic 下的不同 Instance**。
 更进一步的说，RHC 会根据 instance（key）的粒度来进行数据管理，将同一个 key 值的数据放到一个 instance 节点下。关于生命周期，keep-last 是 instance 粒度的，也就是 keep-last 是对每个 instance 节点下需要保留多少个 sample 进行了定义。
 
 当然，你可以设置 unkey，但是你需要自己在应用层负责区分以及处理所有的数据流，以及自己决定它们的生命周期（设置合理的 keep-last，此时存在某个 key 数据多，某个 key 数据少的问题）。
+
+如下图所示:
+![alt text](image.png)
