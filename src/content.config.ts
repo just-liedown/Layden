@@ -8,13 +8,24 @@ function removeDupsAndLowerCase(array: string[]) {
   return Array.from(distinctItems)
 }
 
+function withLanguage<T extends z.ZodRawShape>(shape: T) {
+  return z
+    .object({
+      ...shape,
+      // `astro-pure new` writes `lang`, while the theme expects `language`.
+      language: z.string().optional(),
+      lang: z.string().optional()
+    })
+    .transform(({ lang, language, ...rest }) => ({ ...rest, language: language ?? lang }))
+}
+
 // Define blog collection
 const blog = defineCollection({
   // Load Markdown and MDX files in the `src/content/blog/` directory.
   loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
   // Required
   schema: ({ image }) =>
-    z.object({
+    withLanguage({
       // Required
       title: z.string().max(60),
       description: z.string().max(160),
@@ -33,7 +44,6 @@ const blog = defineCollection({
         })
         .optional(),
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
-      language: z.string().optional(),
       draft: z.boolean().default(false),
       // Special fields
       comment: z.boolean().default(true)
@@ -44,7 +54,7 @@ const blog = defineCollection({
 const docs = defineCollection({
   loader: glob({ base: './src/content/docs', pattern: '**/*.{md,mdx}' }),
   schema: () =>
-    z.object({
+    withLanguage({
       title: z.string().max(60),
       description: z.string().max(160),
       publishDate: z.coerce.date().optional(),
